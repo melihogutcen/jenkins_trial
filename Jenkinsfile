@@ -14,6 +14,14 @@ pipeline {
         booleanParam(name: 'executeTests',defaultValue: true, description:'')
         }
     stages {
+        stage("init") {
+            steps {
+                script {
+                   gv = load "script.groovy" 
+                }
+            }
+        }
+
         stage('Build') {
            /* when {
                 expression {
@@ -21,7 +29,10 @@ pipeline {
                 }
             } */
             steps {
-                echo 'Building....'
+                script {
+                    gv.buildApp()
+                }
+
                 // echo "Building version ${NEW_VERSION}"
             }
         }
@@ -33,13 +44,19 @@ pipeline {
                 }
             } 
             steps {
-                echo 'Testing.....'
+                script {
+                    gv.testApp()
+                }
+
             }
         }
         stage('Deployment') {
             steps {
-                echo 'Deploying.....'
-                echo "Deploying ${params.VERSION}"
+                script {
+                    gv.deployApp()
+                }
+
+                // echo "Deploying ${params.VERSION}"
                 /* echo "Deploying with ${SERVER_CREDENTIALS}"
                 sh "${SERVER_CREDENTIALS}"
                 withCredentials([
